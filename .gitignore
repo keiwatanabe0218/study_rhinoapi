@@ -112,3 +112,4 @@ dmypy.json
 # Reference
 *.pem
 .DS_Store
+migrations

@@ -1,7 +1,7 @@
 from django.db.models import fields
 from django.db.models.fields.related_descriptors import create_reverse_many_to_one_manager
 from rest_framework import serializers
-from .models import Object
+from .models import Object, MoveObjects
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
@@ -23,3 +23,12 @@ class ObjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Object
         fields = ['id', 'title', 'objs', 'created_at', 'updated_at', 'created_by']
+
+
+class MoveObjectsSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M", read_only=True)
+    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M", read_only=True)
+    created_by = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    class Meta:
+        model = MoveObjects
+        fields = ['id', 'title', 'objs', 'moved_objs', 'mov_x', 'mov_y', 'mov_z', 'mov_count', 'created_at', 'updated_at', 'created_by']
