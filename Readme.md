@@ -14,5 +14,5 @@ python rhinoapi/manage.py migrate
 
 ## server起動
 ```
-python pic_archi/manage.py runserver
+python rhinoapi/manage.py runserver
 ```
