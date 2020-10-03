@@ -22,8 +22,9 @@ width = 450.34
 depth = 600
 height = 800
 
-url = 'http://127.0.0.1:8000/api/objects/box/'
-token = 'Token 55902335299b1c34bc240caabe440c57c20b1c41'
+#url = 'http://127.0.0.1:8000/api/objects/box/'
+url = 'http://47.74.53.217/api/objects/box/'
+token = 'Token 25287dd7663f1da9458aeafc055fee67ee80895d'
 values = {'title': 'test3',
           'width': width,
           'depth': depth,

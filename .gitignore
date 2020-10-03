@@ -113,3 +113,5 @@ dmypy.json
 *.pem
 .DS_Store
 migrations
+doc/
+

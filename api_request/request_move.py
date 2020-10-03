@@ -39,8 +39,9 @@ mov_y = 0
 mov_z = 10
 mov_count = 5
 
-url = 'http://127.0.0.1:8000/api/move_objects/move/'
-token = 'Token 55902335299b1c34bc240caabe440c57c20b1c41'
+#url = 'http://127.0.0.1:8000/api/move_objects/move/'
+url = 'http://47.74.53.217/api/move_objects/move/'
+token = 'Token 25287dd7663f1da9458aeafc055fee67ee80895d'
 values = {'title': 'test1',
           'mov_x': mov_x,
           'mov_y': mov_y,

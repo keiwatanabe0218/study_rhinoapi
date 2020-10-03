@@ -19,10 +19,9 @@ elif rhino_version == '7':
     clr.AddReference('Newtonsoft.Json.Rhino')
 import Newtonsoft.Json
 
-title = 'test1'
-url = 'http://127.0.0.1:8000/api/move_objects/get/?'
-url = 'http://47.74.53.217/api/move_objects/get/?'
-token = 'Token 25287dd7663f1da9458aeafc055fee67ee80895d'
+title = 'test01'
+url = 'http://127.0.0.1:8000/api/twisted_tower/get/?'
+token = 'Token 16f5e660b468f3600e664cc7024e6e91d9ba2676'
 values = {'title': title}
 headers = {'Authorization': token}
 
@@ -33,15 +32,11 @@ response = urllib2.urlopen(req)
 res = response.read()
 res_dict = json.loads(res)
 title = res_dict['title']
-objs_json = json.loads(res_dict['moved_objs'])
-
-objs = []
-
-for obj in objs_json:
-    objs.append(Newtonsoft.Json.JsonConvert.DeserializeObject(obj, rg.Brep))
-
-for obj in objs:
-    sc.doc.Objects.AddBrep(obj)
-
+twisted_tower_json = json.loads(res_dict['twisted_tower'])
+# Rhinoオブジェクトに変換
+twisted_tower = Newtonsoft.Json.JsonConvert.DeserializeObject(twisted_tower_json, rg.Brep)
+# Rhinoに追加
+sc.doc.Objects.AddBrep(twisted_tower)
+# 再描画
 sc.doc.Views.Redraw()
 
