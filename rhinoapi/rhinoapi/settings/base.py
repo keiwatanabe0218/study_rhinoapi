@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'api.apps.ApiConfig',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -47,7 +48,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  
 ]
+
 
 ROOT_URLCONF = 'rhinoapi.urls'
 
@@ -69,7 +72,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'rhinoapi.wsgi.application'
 
-
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:3000',
+)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
