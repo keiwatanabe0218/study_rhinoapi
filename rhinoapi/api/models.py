@@ -31,11 +31,11 @@ class TwistedTower(models.Model):
     # タイトル
     title = models.CharField(max_length=50)
     # ベースカーブ
-    base_curve = models.CharField(blank=True, max_length=10000000)
+    base_curve = models.TextField(blank=True)
     # 中心点
-    center_point = models.CharField(blank=True, max_length=10000000)
+    center_point = models.TextField(blank=True)
     # タワー
-    twisted_tower = models.CharField(blank=True, max_length=10000000)
+    twisted_tower = models.TextField(blank=True)
     # ねじれ角度
     angle = models.CharField(max_length=50)
     # タワーの高さ

@@ -36,9 +36,12 @@ class MoveObjectsSerializer(serializers.ModelSerializer):
 
 
 class TwistedTowerSerializer(serializers.ModelSerializer):
+    # 日時系はここで文字列化
     created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M", read_only=True)
     updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M", read_only=True)
+    # 現在のユーザーをデフォルトに設定
     created_by = serializers.HiddenField(default=serializers.CurrentUserDefault())
     class Meta:
+        # モデルを指定
         model = TwistedTower
         fields = ['id', 'title', 'base_curve', 'center_point', 'twisted_tower', 'angle', 'height', 'created_at', 'updated_at', 'created_by']

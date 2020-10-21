@@ -114,4 +114,7 @@ dmypy.json
 .DS_Store
 migrations
 doc/
-
+*.3dmbak
+*.3dm
+*.3dm.rhl
+Thumbs.db
