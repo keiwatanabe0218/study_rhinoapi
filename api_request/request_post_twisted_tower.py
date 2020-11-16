@@ -25,9 +25,9 @@ base_curve = rs.coercecurve(rs.GetObject(message="select base curve"))
 # 回転させる中心点
 center_point = rg.AreaMassProperties.Compute(base_curve).Centroid
 # 角度
-angle = 30
+angle = 40
 # 高さ
-height = 100
+height = 200
 # シリアライズ
 base_curve_json = json.dumps(Newtonsoft.Json.JsonConvert.SerializeObject(base_curve))
 center_point_json = json.dumps(Newtonsoft.Json.JsonConvert.SerializeObject(center_point))

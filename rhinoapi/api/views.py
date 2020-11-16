@@ -14,7 +14,13 @@ from rest_framework.serializers import Serializer
 from .models import Object, MoveObjects, TwistedTower
 from .serializers import ObjectSerializer, UserSerializer, MoveObjectsSerializer, TwistedTowerSerializer
 from .ownpermissions import ProfilePermission
-from .rhino_commands.commands import create_box, move_objects, twisted_tower_command
+from .rhino_commands.commands import create_box, move_objects, twisted_tower_command, twisted_tower_to_mesh
+
+from django.views.generic import (TemplateView,ListView,
+                                  DetailView,CreateView,
+                                  UpdateView,DeleteView)
+
+import json
 
 # Create your views here.
 
@@ -160,3 +166,19 @@ class TwistedTowerViewSet(viewsets.ModelViewSet):
         serializer = TwistedTowerSerializer(vm)
         # データを返す
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class TwistedTowerView(DetailView):
+    model = TwistedTower
+    context_object_name = 'twisted_tower'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # post = context.get("object")
+        # # do something
+        # # PV数を追加
+        # post.add_views()
+        self.func(context)
+        return context
+    def func(self, context):
+        context['twisted_tower'] = twisted_tower_to_mesh(context['object'].twisted_tower)
+        return context

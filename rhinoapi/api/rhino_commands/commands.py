@@ -7,6 +7,7 @@ import rhino3dm
 import Newtonsoft.Json
 import math
 
+
 def create_box(width, depth, height):
 
     breps = {}
@@ -89,6 +90,14 @@ def desirialize_objects(objs_json, type):
     for obj_js in json.loads(objs_json):
         objs.append(Newtonsoft.Json.JsonConvert.DeserializeObject(obj_js, type))
     return objs
+
+def twisted_tower_to_mesh(objs_json):
+    brep = Newtonsoft.Json.JsonConvert.DeserializeObject(json.loads(objs_json), rg.Brep)
+    mesh = rg.Mesh.CreateFromBrep(brep)
+    joinedMesh = rg.Mesh()
+    for m in mesh:
+        joinedMesh.Append(m)
+    return Newtonsoft.Json.JsonConvert.SerializeObject(joinedMesh)
 
 
 if __name__ == '__main__':

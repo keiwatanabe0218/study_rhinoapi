@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body { margin: 0; }
+        canvas { width: 100%; height: 100%; }
+        #container {position: relative;}
+        #container canvas { position: absolute;}
+        #overlay {z-index: 1; width: 100%}
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
+</head>
+<body>
+    <p>title: {{object.title}}</p>
+    <p>angle: {{object.angle}}</p>
+    <p>height: {{object.height}}</p>
+    <!-- <p>{{twisted_tower}}</p> -->
+    <script type="text/javascript" src="{% static 'resources/three.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'resources/OrbitControls.js' %}"></script>
+    <script type="text/javascript" src="{% static 'resources/rhino3dm.js' %}"></script>
+    <script>
+        
+
+        // let fetchPromise = fetch("../../../static/resources/models/hello_mesh.3dm");
+
+        rhino3dm().then(async m => {
+            console.log('Loaded rhino3dm.');
+            let rhino = m;
+
+            // let res = await fetchPromise;
+            // let buffer = await res.arrayBuffer();
+            // let arr = new Uint8Array(buffer);
+            // let doc = rhino.File3dm.fromByteArray(arr);
+            let data = JSON.parse('{{twisted_tower}}'.replace(/&quot;/g,"\""));
+            let tt = rhino.CommonObject.decode(data);
+            // console.log(tt);
+
+            THREE.Object3D.DefaultUp = new THREE.Vector3(0,0,1)
+
+            let material = new THREE.MeshNormalMaterial();
+
+            let threeMesh = meshToThreejs(tt, material);
+            init();
+            scene.add(threeMesh);
+
+            // let objects = doc.objects();
+            // for (let i = 0; i < objects.count; i++) {
+            //     let mesh = objects.get(i).geometry();
+            //     if(mesh instanceof rhino.Mesh) {
+            //         console.log(mesh);
+            //         // convert all meshes in 3dm model into threejs objects
+            //         let threeMesh = meshToThreejs(mesh, material);
+            //         scene.add(threeMesh);
+            //     }
+            // }
+        });
+
+        // BOILERPLATE //
+        var scene, camera, renderer, controls;
+
+        function init(){
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(1,1,1);
+            //カメラの設定
+            camera = new THREE.PerspectiveCamera( 45, window.innerWidth/window.innerHeight, 1, 1000 );
+            //カメラの位置を指定
+            camera.position.set(236.485,-173.789,208.056)
+            renderer = new THREE.WebGLRenderer({antialias: true});
+            renderer.setPixelRatio( window.devicePixelRatio );
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            var canvas = document.getElementById("canvas");
+            canvas.appendChild( renderer.domElement );
+
+
+            controls = new THREE.OrbitControls( camera, renderer.domElement  );
+
+            window.addEventListener( 'resize', onWindowResize, false );
+            animate();
+        }
+
+        //毎フレームごとに呼び出される
+        var animate = function () {
+            requestAnimationFrame( animate );
+            controls.update();
+            renderer.render( scene, camera );
+        };
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            animate();
+        }
+
+        function meshToThreejs(mesh, material) {
+            let loader = new THREE.BufferGeometryLoader();
+            var geometry = loader.parse(mesh.toThreejsJSON());
+            return new THREE.Mesh(geometry, material);
+        }
+    </script>
+    <div id="canvas"></div>
+
+    <!-- <script type="text/javascript" src="{% static 'App/test.js' %}"></script> -->
+    
+</body>
+</html>

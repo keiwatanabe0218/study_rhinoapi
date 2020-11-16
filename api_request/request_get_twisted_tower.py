@@ -32,7 +32,9 @@ response = urllib2.urlopen(req)
 res = response.read()
 res_dict = json.loads(res)
 title = res_dict['title']
+print(res_dict['twisted_tower'])
 twisted_tower_json = json.loads(res_dict['twisted_tower'])
+print(twisted_tower_json)
 # Rhinoオブジェクトに変換
 twisted_tower = Newtonsoft.Json.JsonConvert.DeserializeObject(twisted_tower_json, rg.Brep)
 # Rhinoに追加
