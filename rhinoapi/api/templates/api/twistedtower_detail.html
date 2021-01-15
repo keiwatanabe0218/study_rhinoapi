@@ -15,9 +15,28 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
 </head>
 <body>
-    <p>title: {{object.title}}</p>
-    <p>angle: {{object.angle}}</p>
-    <p>height: {{object.height}}</p>
+    <div id="div1">
+        <form method="post">{% csrf_token %}
+            <p>title: {{object.title}}</p>
+            <p>
+                <label for="angle">angle: </label>
+                <input id="angle" type="text" name="angle" value="{{object.angle}}">
+            </p>
+
+            <p>
+                <label for="height">height: </label>
+                <input type="range" id="height" name="height" min="100" max="300" value="{{object.height}}" step="1">
+            </p>
+            <p>
+                <input type="submit" value="更新" id="changeButtonId">
+            </p>
+
+        </form>
+    </div>
+    <div class='right-container'>
+        <div id='orientCubeWrapper'></div>
+    </div>
+    <p><input class="numeric-textbox" id="inp-height" type="text" value="40"></p>
     <!-- <p>{{twisted_tower}}</p> -->
     <script type="text/javascript" src="{% static 'resources/three.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'resources/OrbitControls.js' %}"></script>
@@ -87,6 +106,9 @@
             requestAnimationFrame( animate );
             controls.update();
             renderer.render( scene, camera );
+            //add viewcube
+            updateCubeCamera();
+            cubeRenderer.render(cubeScene, cubeCamera);
         };
 
         function onWindowResize() {
@@ -101,6 +123,235 @@
             var geometry = loader.parse(mesh.toThreejsJSON());
             return new THREE.Mesh(geometry, material);
         }
+        var $ = function(id) { return document.getElementById(id); };
+
+        $('btn').onclick = function() {
+        var width = parseInt($('inp-width').value),
+        height = parseInt($('inp-height').value),
+        length = parseInt($('inp-length').value);
+
+    cube.scale.x = width;
+    cube.scale.y = height;
+    cube.scale.z = length;
+};
+        // View Cube Start
+        let cubeCameraDistance = 1.75;
+
+        let cubeWrapper = document.getElementById('orientCubeWrapper');
+        let cubeScene = new THREE.Scene();
+        let cubeCamera = new THREE.PerspectiveCamera(70, cubeWrapper.offsetWidth / cubeWrapper.offsetHeight, 0.1, 100);
+        let cubeRenderer = new THREE.WebGLRenderer({
+            alpha: true,
+            antialias: true,
+            preserveDrawingBuffer: true
+        });
+
+        cubeRenderer.setSize(cubeWrapper.offsetWidth, cubeWrapper.offsetHeight);
+        cubeRenderer.setPixelRatio(window.deivicePixelRatio);
+
+        cubeWrapper.appendChild(cubeRenderer.domElement);
+
+        let materials = [];
+        let texts = ['RIGHT', 'LEFT', 'TOP', 'BOTTOM', 'FRONT', 'BACK'];
+
+        let textureLoader = new THREE.TextureLoader();
+        let canvas = document.createElement('canvas');
+        let ctx = canvas.getContext('2d');
+
+        let size = 64;
+        canvas.width = size;
+        canvas.height = size;
+
+        ctx.font = 'bolder 12px "Open sans", Arial';
+        ctx.textBaseline = 'middle';
+        ctx.textAlign = 'center';
+
+        let mainColor = '#fff';
+        let otherColor = '#ccc';
+
+        let bg = ctx.createLinearGradient(0, 0, 0, size);
+        bg.addColorStop(0, mainColor);
+        bg.addColorStop(1, otherColor);
+
+        for (let i = 0; i < 6; i++) {
+            if (texts[i] == 'TOP') {
+                ctx.fillStyle = mainColor;
+            } else if (texts[i] == 'BOTTOM') {
+                ctx.fillStyle = otherColor;
+            } else {
+                ctx.fillStyle = bg;
+            }
+            ctx.fillRect(0, 0, size, size);
+            ctx.strokeStyle = '#aaa';
+            ctx.setLineDash([8, 8]);
+            ctx.lineWidth = 4;
+            ctx.strokeRect(0, 0, size, size);
+            ctx.fillStyle = '#999';
+            ctx.fillText(texts[i], size / 2, size / 2);
+            materials[i] = new THREE.MeshBasicMaterial({
+                map: textureLoader.load(canvas.toDataURL())
+            });
+        }
+
+        let planes = [];
+
+        let planeMaterial = new THREE.MeshBasicMaterial({
+            side: THREE.DoubleSide,
+            color: 0x00c0ff,
+            transparent: true,
+            opacity: 0,
+            depthTest: false
+        });
+        let planeSize = 0.7;
+        let planeGeometry = new THREE.PlaneGeometry(planeSize, planeSize);
+
+        let a = 0.51;
+
+        let plane1 = new THREE.Mesh(planeGeometry, planeMaterial.clone());
+        plane1.position.z = a;
+        cubeScene.add(plane1);
+        planes.push(plane1);
+
+        let plane2 = new THREE.Mesh(planeGeometry, planeMaterial.clone());
+        plane2.position.z = -a;
+        cubeScene.add(plane2);
+        planes.push(plane2);
+
+        let plane3 = new THREE.Mesh(planeGeometry, planeMaterial.clone());
+        plane3.rotation.y = Math.PI / 2;
+        plane3.position.x = a;
+        cubeScene.add(plane3);
+        planes.push(plane3);
+
+        let plane4 = new THREE.Mesh(planeGeometry, planeMaterial.clone());
+        plane4.rotation.y = Math.PI / 2;
+        plane4.position.x = -a;
+        cubeScene.add(plane4);
+        planes.push(plane4);
+
+        let plane5 = new THREE.Mesh(planeGeometry, planeMaterial.clone());
+        plane5.rotation.x = Math.PI / 2;
+        plane5.position.y = a;
+        cubeScene.add(plane5);
+        planes.push(plane5);
+
+        let plane6 = new THREE.Mesh(planeGeometry, planeMaterial.clone());
+        plane6.rotation.x = Math.PI / 2;
+        plane6.position.y = -a;
+        cubeScene.add(plane6);
+        planes.push(plane6);
+
+        let groundMaterial = new THREE.MeshBasicMaterial({
+            color: 0xaaaaaa
+        });
+        let groundGeometry = new THREE.PlaneGeometry(1, 1);
+        let groundPlane = new THREE.Mesh(groundGeometry, groundMaterial);
+        groundPlane.rotation.x = -Math.PI / 2;
+        groundPlane.position.y = -0.6;
+
+        cubeScene.add(groundPlane);
+
+        let cube = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), materials);
+        cubeScene.add(cube);
+
+        function updateCubeCamera() {
+            cubeCamera.rotation.copy(camera.rotation);
+            let dir = camera.position.clone().sub(controls.target).normalize();
+            cubeCamera.position.copy(dir.multiplyScalar(cubeCameraDistance));
+        }
+
+        let activePlane = null;
+
+        cubeRenderer.domElement.onmousemove = function (evt) {
+
+            if (activePlane) {
+                activePlane.material.opacity = 0;
+                activePlane.material.needsUpdate = true;
+                activePlane = null;
+            }
+
+            let x = evt.offsetX;
+            let y = evt.offsetY;
+            let size = cubeRenderer.getSize(new THREE.Vector2());
+            let mouse = new THREE.Vector2(x / size.width * 2 - 1, -y / size.height * 2 + 1);
+
+            let raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, cubeCamera);
+            let intersects = raycaster.intersectObjects(planes.concat(cube));
+
+            if (intersects.length > 0 && intersects[0].object != cube) {
+                activePlane = intersects[0].object;
+                activePlane.material.opacity = 0.2;
+                activePlane.material.needsUpdate = true;
+            }
+        }
+
+        let startTime = 0;
+        let duration = 500;
+        let oldPosition = new THREE.Vector3();
+        let newPosition = new THREE.Vector3();
+        let play = false;
+
+        cubeRenderer.domElement.onclick = function (evt) {
+
+            cubeRenderer.domElement.onmousemove(evt);
+
+            if (!activePlane || hasMoved) {
+                return false;
+            }
+
+            oldPosition.copy(camera.position);
+
+            let distance = camera.position.clone().sub(controls.target).length();
+            newPosition.copy(controls.target);
+
+            if (activePlane.position.x !== 0) {
+                newPosition.x += activePlane.position.x < 0 ? -distance : distance;
+            } else if (activePlane.position.y !== 0) {
+                newPosition.y += activePlane.position.y < 0 ? -distance : distance;
+            } else if (activePlane.position.z !== 0) {
+                newPosition.z += activePlane.position.z < 0 ? -distance : distance;
+            }
+
+
+            camera.position.copy(newPosition);
+        }
+
+        cubeRenderer.domElement.ontouchmove = function (e) {
+            let rect = e.target.getBoundingClientRect();
+            let x = e.targetTouches[0].pageX - rect.left;
+            let y = e.targetTouches[0].pageY - rect.top;
+            cubeRenderer.domElement.onmousemove({
+                offsetX: x,
+                offsetY: y
+            });
+        }
+
+        cubeRenderer.domElement.ontouchstart = function (e) {
+            let rect = e.target.getBoundingClientRect();
+            let x = e.targetTouches[0].pageX - rect.left;
+            let y = e.targetTouches[0].pageY - rect.top;
+            cubeRenderer.domElement.onclick({
+                offsetX: x,
+                offsetY: y
+            });
+        }
+
+        let hasMoved = false;
+
+        function antiMoveOnDown(e) {
+            hasMoved = false;
+        }
+        function antiMoveOnMove(e) {
+            hasMoved = true;
+        }
+
+        window.addEventListener('mousedown', antiMoveOnDown, false);
+        window.addEventListener('mousemove', antiMoveOnMove, false);
+        window.addEventListener('touchstart', antiMoveOnDown, false);
+        window.addEventListener('touchmove', antiMoveOnMove, true);
+
+        // View Cube End
     </script>
     <div id="canvas"></div>
 
