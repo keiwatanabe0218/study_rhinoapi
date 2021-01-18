@@ -125,6 +125,16 @@
             window.addEventListener( 'resize', onWindowResize, false );
             animate();
         }
+        // View Cube Variables
+        let cubeCameraDistance = 1.75;
+        let cubeWrapper = document.getElementById('orientCubeWrapper');
+        let cubeScene = new THREE.Scene();
+        let cubeCamera = new THREE.PerspectiveCamera(70, cubeWrapper.offsetWidth / cubeWrapper.offsetHeight, 0.1, 100);
+        let cubeRenderer = new THREE.WebGLRenderer({
+                alpha: true,
+                antialias: true,
+                preserveDrawingBuffer: true
+            });
 
         //毎フレームごとに呼び出される
         var animate = function () {
@@ -150,27 +160,16 @@
         }
         var $ = function(id) { return document.getElementById(id); };
 
-        $('btn').onclick = function() {
-        var width = parseInt($('inp-width').value),
-        height = parseInt($('inp-height').value),
-        length = parseInt($('inp-length').value);
+//         $('btn').onclick = function() {
+//         var width = parseInt($('inp-width').value),
+//         height = parseInt($('inp-height').value),
+//         length = parseInt($('inp-length').value);
 
-    cube.scale.x = width;
-    cube.scale.y = height;
-    cube.scale.z = length;
-};
+//     cube.scale.x = width;
+//     cube.scale.y = height;
+//     cube.scale.z = length;
+// };
         // View Cube Start
-        let cubeCameraDistance = 1.75;
-
-        let cubeWrapper = document.getElementById('orientCubeWrapper');
-        let cubeScene = new THREE.Scene();
-        let cubeCamera = new THREE.PerspectiveCamera(70, cubeWrapper.offsetWidth / cubeWrapper.offsetHeight, 0.1, 100);
-        let cubeRenderer = new THREE.WebGLRenderer({
-            alpha: true,
-            antialias: true,
-            preserveDrawingBuffer: true
-        });
-
         cubeRenderer.setSize(cubeWrapper.offsetWidth, cubeWrapper.offsetHeight);
         cubeRenderer.setPixelRatio(window.deivicePixelRatio);
 
