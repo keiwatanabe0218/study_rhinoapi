@@ -36,6 +36,23 @@
         #orientCubeWrapper:hover {
             opacity: 1;
         }
+
+        #loading-screen {
+            position: absolute;
+            z-index: 2;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            opacity: 1;
+            transition: 1s opacity;
+        }
+
+        .wrapper {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
 </head>
@@ -58,6 +75,9 @@
 
         </form>
     </div>
+    <section id="loading-screen">
+        <div id="canvasloader-container" class="wrapper"></div>
+    </section>
     <div class='right-container'>
         <div id='orientCubeWrapper'></div>
     </div>
@@ -66,6 +86,7 @@
     <script type="text/javascript" src="{% static 'resources/three.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'resources/OrbitControls.js' %}"></script>
     <script type="text/javascript" src="{% static 'resources/rhino3dm.js' %}"></script>
+    <script type="text/javascript" src="{% static 'resources/heartcode-canvasloader-min.js' %}"></script>
     <script>
         
 
@@ -376,6 +397,20 @@
         window.addEventListener('touchmove', antiMoveOnMove, true);
 
         // View Cube End
+        const loadingScreen = document.getElementById('loading-screen');
+        loadingScreen.style.display = 'none';
+        const changeBtn = document.getElementById('changeButtonId');
+        changeBtn.onclick = function ResetParameters() {
+            loadingScreen.style.display = 'block';
+            var cl = new CanvasLoader('canvasloader-container');
+            cl.setColor('#4f4f4f');
+            cl.setDiameter(45);
+            cl.setDensity(75);
+            cl.setRange(0.7);
+            cl.setSpeed(3);
+            cl.setFPS(22);
+            cl.show();
+        }
     </script>
     <div id="canvas"></div>
 
