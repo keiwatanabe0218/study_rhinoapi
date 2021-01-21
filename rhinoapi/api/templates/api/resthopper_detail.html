@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Compute RestHopper Test</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            outline: none;
+            border: none;
+        }
+
+        input {
+            width: 90%;
+        }
+
+        #container {
+            position: relative;
+        }
+
+        /* #container canvas,
+        #overlay {
+            position: absolute;
+        } */
+
+        #overlay {
+            z-index: 1;
+            width: 100%
+        }
+
+        #loader {
+            border: 5px solid #f3f3f3;
+            /* Light grey */
+            border-top: 5px solid #3d3d3d;
+            /* Grey */
+            border-X: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            z-index: 2;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        div #canvas {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            border: 0;
+            overflow: hidden;
+            display: block;
+        }
+
+        .right-container {
+            position: absolute;
+            right: 10px;
+            display: flex;
+        }
+
+        #orientCubeWrapper {
+            width: 130px;
+            height: 130px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+            -webkit-transition: 0.3s;
+        }
+
+        #orientCubeWrapper canvas {
+            outline: 0;
+        }
+
+        #orientCubeWrapper:hover {
+            opacity: 1;
+        }
+
+        #changeButtonId {
+            width: 50px;
+            margin: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loader"></div>
+    <div id="container">
+        <div id="overlay">
+            <form method="post">{% csrf_token %}
+                <div>
+                    <input type="range" id="X" name="X" min="1" max="10.00" value="{{object.mov_x}}" step="0.1"
+                        onmouseup="onSliderChange()" ontouchend="onSliderChange()">
+                    <label for="X">X</label>
+                </div>
+                <div>
+                    <input type="range" id="Y" name="Y" min="1" max="10.00" value="{{object.mov_y}}" step="0.1"
+                        onmouseup="onSliderChange()" ontouchend="onSliderChange()">
+                    <label for="Y">Y</label>
+                </div>
+                <div>
+                    <input type="range" id="Z" name="Z" min="1" max="50.00" value="{{object.mov_z}}" step="0.1"
+                        onmouseup="onSliderChange()" ontouchend="onSliderChange()">
+                    <label for="Z">Z</label>
+                </div>
+                <div>
+                    <input type="range" id="M_st" name="M_st" min="1" max="12" value="{{object.start_month}}" step="1"
+                        onmouseup="onSliderChange()" ontouchend="onSliderChange()">
+                    <label for="M_st">Start Month</label>
+                </div>
+                <div>
+                    <input type="range" id="D_st" name="D_st" min="1" max="31" value="{{object.start_day}}" step="1"
+                        onmouseup="onSliderChange()" ontouchend="onSliderChange()">
+                    <label for="D_st">Start Day</label>
+                </div>
+                <div>
+                    <input type="range" id="H_st" name="H_st" min="1" max="24" value="{{object.start_hour}}" step="1"
+                        onmouseup="onSliderChange()" ontouchend="onSliderChange()">
+                    <label for="D_st">Start Hour</label>
+                </div>
+                <div>
+                    <input type="range" id="M_ed" name="M_ed" min="1" max="12" value="{{object.end_month}}" step="1"
+                        onmouseup="onSliderChange()" ontouchend="onSliderChange()">
+                    <label for="M_ed">End Month</label>
+                </div>
+                <div>
+                    <input type="range" id="D_ed" name="D_ed" min="1" max="31" value="{{object.end_day}}" step="1"
+                        onmouseup="onSliderChange()" ontouchend="onSliderChange()">
+                    <label for="D_ed">End Day</label>
+                </div>
+                <div>
+                    <input type="range" id="H_ed" name="H_ed" min="1" max="24" value="{{object.end_hour}}" step="1"
+                        onmouseup="onSliderChange()" ontouchend="onSliderChange()">
+                    <label for="D_ed">End Hour</label>
+                </div>
+                <div>
+                    <input type="submit" value="更新" id="changeButtonId">
+                </div>
+            </form>
+        </div>
+        <div class='right-container'>
+            <div id='orientCubeWrapper'></div>
+        </div>
+        <div id="canvas"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.118.1/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.118.1/examples/js/controls/OrbitControls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/rhino3dm/rhino3dm.min.js"></script> <!-- latest -->
+    <script src="https://cdn.jsdelivr.net/npm/compute-rhino3d/compute.rhino3d.min.js"></script> <!-- latest -->
+    <script src="{% static 'resources/app.js' %}"></script>
+</body>
+
+</html>

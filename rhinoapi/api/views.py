@@ -11,8 +11,8 @@ from rest_framework import status
 
 from django.contrib.auth.models import User
 from rest_framework.serializers import Serializer
-from .models import Object, MoveObjects, TwistedTower
-from .serializers import ObjectSerializer, UserSerializer, MoveObjectsSerializer, TwistedTowerSerializer
+from .models import Object, MoveObjects, TwistedTower, RestHopper
+from .serializers import ObjectSerializer, UserSerializer, MoveObjectsSerializer, TwistedTowerSerializer, RestHopperSerializer
 from .ownpermissions import ProfilePermission
 from .rhino_commands.commands import create_box, move_objects, twisted_tower_command, twisted_tower_to_mesh
 
@@ -194,3 +194,95 @@ class TwistedTowerView(DetailView):
 			towermodel.twisted_tower = twisted_tower
 			towermodel.save(update_fields=['angle','height','twisted_tower'])
 			return HttpResponseRedirect(reverse('twisted_tower', kwargs={'pk':self.object.pk}))
+
+class RestHopperViewSet(viewsets.ModelViewSet):
+	# モデル
+	queryset = RestHopper.objects.all()
+	# シリアライザー
+	serializer_class = RestHopperSerializer
+	# ユーザー認証
+	authentication_classes = (TokenAuthentication,)
+	permission_classes = (IsAuthenticated,)
+
+	# RestHopperをつくるAPI
+	@action(methods=["post"], detail=False)
+	def create_resthopper(self, request):
+		# リクエストからパラメータを取得
+		user = request.user
+		mov_x = request.data['mov_x']
+		mov_y = request.data['mov_y']
+		mov_z = request.data['mov_z']
+		start_month = request.data['start_month']
+		start_day = request.data['start_day']
+		start_hour = request.data['start_hour']
+		end_month = request.data['end_month']
+		end_day = request.data['end_day']
+		end_hour = request.data['end_hour']
+
+		# 以前のモデルのデータを削除する
+		pre_vm = RestHopper.objects.all()
+		pre_vm.delete()
+		# モデルを作成
+		item = RestHopper(mov_x=mov_x, mov_y=mov_y, mov_z=mov_z, start_month=start_month, start_day=start_day, start_hour=start_hour, end_month=end_month, end_day=end_day, end_hour=end_hour, created_by=user)
+		item.save()
+
+		# シリアライズ
+		serializer = RestHopperSerializer(data={"mov_x": mov_x, "mov_y":mov_y, "mov_z":mov_z, "start_month":start_month,
+													'start_day':start_day, 'start_hour':start_hour, 'end_month':end_month, 'end_day':end_day, 'end_hour':end_hour}, context={'request': request})
+		
+		# シリアライザが有効なら200、無効なら400を返す
+		if serializer.is_valid():
+			return Response(serializer.data, status=status.HTTP_200_OK)
+		else:
+			return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	# DBにあるモデルを参照するAPI
+	# rhinoのurllib2がdata付きでGETたたけないのでPOSTで代用
+	@action(methods=["post"], detail=False)
+	def get(self, request):
+		user = request.user
+		start_month = request.data['start_month']
+
+		# リクエストから取得したタイトルのモデルを取得
+		vm = RestHopper.objects.filter(start_month = start_month, created_by = user)[0]
+		# シリアライズ
+		serializer = RestHopperSerializer(vm)
+		# データを返す
+		return Response(serializer.data, status=status.HTTP_200_OK)
+
+class RestHopperView(DetailView):
+	model = RestHopper
+	context_object_name = 'resthopper'
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		self.func(context)
+		return context
+	def func(self, context):
+		return context
+	def post(self, request, *args, **kwargs):
+		#IdでDBにあるオブジェクト取得
+		data = get_object_or_404(RestHopper, pk=kwargs["pk"])
+		if request.method == "POST":
+			self.object = self.get_object()
+			#formからリクエストパラメータ取得
+			mov_x = request.POST.get("X")
+			mov_y = request.POST.get("Y")
+			mov_z = request.POST.get("Z")
+			st_month = request.POST.get("M_st")
+			st_date = request.POST.get("D_st")
+			st_hour = request.POST.get("H_st")
+			ed_month = request.POST.get("M_ed")
+			ed_date = request.POST.get("D_ed")
+			ed_hour = request.POST.get("H_ed")
+			#データ更新処理
+			data.mov_x = mov_x
+			data.mov_y = mov_y
+			data.mov_z = mov_z
+			data.start_month = int(st_month)
+			data.start_day = int(st_date)
+			data.start_hour = int(st_hour)
+			data.end_month = int(ed_month)
+			data.end_day = int(ed_date)
+			data.end_hour = int(ed_hour)
+			data.save(update_fields=['mov_x','mov_y','mov_z','start_month','start_day','start_hour','end_month','end_day','end_hour'])
+			return HttpResponseRedirect(reverse('resthopper', kwargs={'pk':self.object.pk}))

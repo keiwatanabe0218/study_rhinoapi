@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 # Create your models here.
 class Object(models.Model):
@@ -49,3 +50,32 @@ class TwistedTower(models.Model):
 
     def __str__(self):
         return self.title
+
+class RestHopper(models.Model):
+    # X
+    mov_x = models.CharField(max_length=50)
+    # Y
+    mov_y = models.CharField(max_length=50)
+    # Z
+    mov_z = models.CharField(max_length=50)
+    # 開始月
+    start_month = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)])
+    # 開始日
+    start_day = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(31)])
+    # 開始時間
+    start_hour = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(24)])
+    # 終了月
+    end_month = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)])
+    # 終了日
+    end_day = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(31)])
+    # 終了時間
+    end_hour = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(24)])
+    # 作成日
+    created_at = models.DateTimeField(auto_now_add=True)
+    # 更新日
+    updated_at = models.DateTimeField(auto_now=True)
+    # 作成者
+    created_by = models.ForeignKey(User, null= True, blank= True, on_delete=models.CASCADE) 
+
+    def __str__(self):
+        return self.mov_x

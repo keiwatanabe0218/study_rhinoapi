@@ -1,7 +1,7 @@
 from django.db.models import fields
 from django.db.models.fields.related_descriptors import create_reverse_many_to_one_manager
 from rest_framework import serializers
-from .models import Object, MoveObjects, TwistedTower
+from .models import Object, MoveObjects, TwistedTower, RestHopper
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
@@ -45,3 +45,14 @@ class TwistedTowerSerializer(serializers.ModelSerializer):
         # モデルを指定
         model = TwistedTower
         fields = ['id', 'title', 'base_curve', 'center_point', 'twisted_tower', 'angle', 'height', 'created_at', 'updated_at', 'created_by']
+
+class RestHopperSerializer(serializers.ModelSerializer):
+    # 日時系はここで文字列化
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M", read_only=True)
+    updated_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M", read_only=True)
+    # 現在のユーザーをデフォルトに設定
+    created_by = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    class Meta:
+        # モデルを指定
+        model = RestHopper
+        fields = ['id', 'mov_x', 'mov_y', 'mov_z', 'start_month', 'start_day', 'start_hour', 'end_month', 'end_day', 'end_hour', 'created_at', 'updated_at', 'created_by']
