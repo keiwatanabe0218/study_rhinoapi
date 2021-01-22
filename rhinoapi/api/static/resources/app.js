@@ -79,7 +79,7 @@ function compute(){
         // console.log(result);
 
         // hide spinner
-        document.getElementById('loader').style.display = 'none';
+        document.getElementById('loading-screen').style.display = 'none';
         console.log(result.values)
         let data = JSON.parse(result.values[0].InnerTree['{ 0; }'][0].data);
 
@@ -105,49 +105,6 @@ function compute(){
         scene.add(threeMesh);
         scene.add(context_threeMesh)
     });
-}
-
-function onSliderChange(){
-
-    // show spinner
-    document.getElementById('loader').style.display = 'block';
-
-    // get slider values
-    X = document.getElementById('X').value;
-    Y = document.getElementById('Y').value;
-    Z = document.getElementById('Z').value;
-    M_st = document.getElementById('M_st').value;
-    D_st = document.getElementById('D_st').value;
-    H_st = document.getElementById('H_st').value;
-    M_ed = document.getElementById('M_ed').value;
-    D_ed = document.getElementById('D_ed').value;
-    H_ed = document.getElementById('H_ed').value;
-
-
-    param1 = new RhinoCompute.Grasshopper.DataTree('RH_IN:201:Y');
-    param1.append([0], [Y]);
-
-    param2 = new RhinoCompute.Grasshopper.DataTree('RH_IN:201:X');
-    param2.append([0], [X]);
-
-    param3 = new RhinoCompute.Grasshopper.DataTree('RH_IN:201:Z');
-    param3.append([0], [Z]);
-
-    param4 = new RhinoCompute.Grasshopper.DataTree('RH_IN:201:M_st');
-    param4.append([0], [M_st]);
-    param5 = new RhinoCompute.Grasshopper.DataTree('RH_IN:201:D_st');
-    param5.append([0], [D_st]);
-    param6 = new RhinoCompute.Grasshopper.DataTree('RH_IN:201:H_st');
-    param6.append([0], [H_st]);
-
-    param7 = new RhinoCompute.Grasshopper.DataTree('RH_IN:201:M_ed');
-    param7.append([0], [M_ed]);
-    param8 = new RhinoCompute.Grasshopper.DataTree('RH_IN:201:D_ed');
-    param8.append([0], [D_ed]);
-    param9 = new RhinoCompute.Grasshopper.DataTree('RH_IN:201:H_ed');
-    param9.append([0], [H_ed]);
-
-    compute();
 }
 
 // BOILERPLATE //
@@ -215,7 +172,7 @@ var viewcube = function () {
     cubeWrapper.appendChild(cubeRenderer.domElement);
 
     let materials = [];
-    let texts = ['RIGHT', 'LEFT', 'TOP', 'BOTTOM', 'FRONT', 'BACK'];
+    let texts = ['RIGHT', 'LEFT', 'BACK', 'FRONT', 'TOP', 'BOTTOM'];
 
     let textureLoader = new THREE.TextureLoader();
     let canvas = document.createElement('canvas');
@@ -410,4 +367,17 @@ function updateCubeCamera() {
     cubeCamera.rotation.copy(camera.rotation);
     let dir = camera.position.clone().sub(controls.target).normalize();
     cubeCamera.position.copy(dir.multiplyScalar(cubeCameraDistance));
+}
+//loading animation
+var changeBtn = document.getElementById('changeButtonId');
+changeBtn.onclick = function showLoader() {
+    document.getElementById('loading-screen').style.display = 'block';
+    var cl = new CanvasLoader('loader');
+    cl.setColor('#4f4f4f');
+    cl.setDiameter(45);
+    cl.setDensity(75);
+    cl.setRange(0.7);
+    cl.setSpeed(3);
+    cl.setFPS(22);
+    cl.show();
 }
